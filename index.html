@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Connexion par visage</title>
+</head>
+<body>
+  <h2>Connexion par reconnaissance faciale</h2>
+
+  <video id="video" width="320" height="240" autoplay muted></video>
+  <br>
+  <button onclick="startVideo()">Démarrer la webcam</button>
+
+  <h3>Ou charge une photo :</h3>
+  <input type="file" id="imageUpload" accept="image/*">
+
+  <h3>Résultat :</h3>
+  <div id="status"></div>
+
+  <script src="https://unpkg.com/face-api.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
