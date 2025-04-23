@@ -2,85 +2,68 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reconnaissance Faciale</title>
-    <script defer src="https://unpkg.com/face-api.js"></script>
-    <script defer>
-        const video = document.addEventListener('DOMContentLoaded', () => {
-            startVideo();
-        });
-
-        async function startVideo() {
-            await Promise.all([
-                faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
-                faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
-                faceapi.nets.faceLandmark68Net.loadFromUri('/models')
-            ]);
-
-            const video = document.getElementById('video');
-            const message = document.getElementById('message');
-
-            navigator.mediaDevices.getUserMedia({ video: {} })
-                .then(stream => video.srcObject = stream)
-                .catch(err => console.error('Erreur caméra', err));
-
-            video.addEventListener('play', async () => {
-                const labeledDescriptors = await loadLabeledImages();
-                const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.6);
-
-                const canvas = faceapi.createCanvasFromMedia(video);
-                document.body.append(canvas);
-                const displaySize = { width: video.width, height: video.height };
-                faceapi.matchDimensions(canvas, displaySize);
-
-                setInterval(async () => {
-                    const detections = await faceapi
-                        .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
-                        .withFaceLandmarks()
-                        .withFaceDescriptors();
-                    
-                    const resized = faceapi.resizeResults(detections, displaySize);
-                    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-
-                    const results = resized.map(d => faceMatcher.findBestMatch(d.descriptor));
-                    results.forEach((result, i) => {
-                        const box = resized[i].detection.box;
-                        const drawBox = new faceapi.draw.DrawBox(box, { label: result.toString() });
-                        drawBox.draw(canvas);
-
-                        const message = document.getElementById('message');
-                        if (result.label === 'Adrien') {
-                            message.innerText = "✅ Bonjour Adrien !";
-                            message.className = "mt-6 text-xl font-semibold text-green-400";
-                        } else {
-                            message.innerText = "❌ Vous n'êtes pas Adrien ! Qui êtes-vous ?";
-                            message.className = "mt-6 text-xl font-semibold text-red-500";
-                        }
-                    });
-                }, 1000);
-            });
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: sans-serif;
+            background-color: #f0f0f0;
         }
-
-        async function loadLabeledImages() {
-            const labels = ['Adrien'];
-            return Promise.all(
-                labels.map(async label => {
-                    const imgUrl = `/models/adrien.jpg`;
-                    const img = await faceapi.fetchImage(imgUrl);
-                    const detection = await faceapi
-                        .detectSingleFace(img)
-                        .withFaceLandmarks()
-                        .withFaceDescriptor();
-                    if (!detection) throw new Error(`Pas de visage détecté pour ${label}`);
-                    return new faceapi.LabeledFaceDescriptors(label, [detection.descriptor]);
-                })
-            );
+        #video-container {
+            position: relative;
+            width: 640px; /* Ajuste selon la résolution souhaitée */
+            height: 480px;
+            border: 1px solid black;
         }
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        #message {
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+            min-height: 2em; /* Pour éviter les sauts de page */
+            text-align: center;
+        }
+        #loading-message {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            z-index: 10;
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-4">
-    <h1 class="text-2xl mb-4 font-bold">Connexion par reconnaissance faciale</h1>
-    <video id="video" width="320" height="240" autoplay class="rounded shadow-lg"></video>
-    <div id="message" class="mt-6 text-xl font-semibold text-yellow-400">Chargement...</div>
+<body>
+    <h1>Mini Projet Reconnaissance Faciale</h1>
+
+    <div id="video-container">
+        <video id="video" width="640" height="480" autoplay muted></video>
+        <canvas id="overlay"></canvas> <div id="loading-message">Chargement des modèles...</div>
+    </div>
+
+    <div id="message">En attente...</div>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <script defer src="script.js"></script>
 </body>
 </html>
