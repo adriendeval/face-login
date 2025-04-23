@@ -1,23 +1,86 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Connexion par visage</title>
+    <meta charset="UTF-8">
+    <title>Reconnaissance Faciale</title>
+    <script defer src="https://unpkg.com/face-api.js"></script>
+    <script defer>
+        const video = document.addEventListener('DOMContentLoaded', () => {
+            startVideo();
+        });
+
+        async function startVideo() {
+            await Promise.all([
+                faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+                faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
+                faceapi.nets.faceLandmark68Net.loadFromUri('/models')
+            ]);
+
+            const video = document.getElementById('video');
+            const message = document.getElementById('message');
+
+            navigator.mediaDevices.getUserMedia({ video: {} })
+                .then(stream => video.srcObject = stream)
+                .catch(err => console.error('Erreur caméra', err));
+
+            video.addEventListener('play', async () => {
+                const labeledDescriptors = await loadLabeledImages();
+                const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.6);
+
+                const canvas = faceapi.createCanvasFromMedia(video);
+                document.body.append(canvas);
+                const displaySize = { width: video.width, height: video.height };
+                faceapi.matchDimensions(canvas, displaySize);
+
+                setInterval(async () => {
+                    const detections = await faceapi
+                        .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+                        .withFaceLandmarks()
+                        .withFaceDescriptors();
+                    
+                    const resized = faceapi.resizeResults(detections, displaySize);
+                    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+
+                    const results = resized.map(d => faceMatcher.findBestMatch(d.descriptor));
+                    results.forEach((result, i) => {
+                        const box = resized[i].detection.box;
+                        const drawBox = new faceapi.draw.DrawBox(box, { label: result.toString() });
+                        drawBox.draw(canvas);
+
+                        const message = document.getElementById('message');
+                        if (result.label === 'Adrien') {
+                            message.innerText = "✅ Bonjour Adrien !";
+                            message.className = "mt-6 text-xl font-semibold text-green-400";
+                        } else {
+                            message.innerText = "❌ Vous n'êtes pas Adrien ! Qui êtes-vous ?";
+                            message.className = "mt-6 text-xl font-semibold text-red-500";
+                        }
+                    });
+                }, 1000);
+            });
+        }
+
+        async function loadLabeledImages() {
+            const labels = ['Adrien'];
+            return Promise.all(
+                labels.map(async label => {
+                    const imgUrl = `/models/adrien.jpg`;
+                    const img = await faceapi.fetchImage(imgUrl);
+                    const detection = await faceapi
+                        .detectSingleFace(img)
+                        .withFaceLandmarks()
+                        .withFaceDescriptor();
+                    if (!detection) throw new Error(`Pas de visage détecté pour ${label}`);
+                    return new faceapi.LabeledFaceDescriptors(label, [detection.descriptor]);
+                })
+            );
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <h2>Connexion par reconnaissance faciale</h2>
-
-  <video id="video" width="320" height="240" autoplay muted></video>
-  <br>
-  <button onclick="startVideo()">Démarrer la webcam</button>
-
-  <h3>Ou charge une photo :</h3>
-  <input type="file" id="imageUpload" accept="image/*">
-
-  <h3>Résultat :</h3>
-  <div id="status"></div>
-
-  <script src="https://unpkg.com/face-api.js"></script>
-  <script src="script.js"></script>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-4">
+    <h1 class="text-2xl mb-4 font-bold">Connexion par reconnaissance faciale</h1>
+    <video id="video" width="320" height="240" autoplay class="rounded shadow-lg"></video>
+    <div id="message" class="mt-6 text-xl font-semibold text-yellow-400">Chargement...</div>
 </body>
 </html>
