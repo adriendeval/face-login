@@ -3,117 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reconnaissance Faciale</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            font-family: 'Roboto', sans-serif;
-            background-color: #f4f4f9;
-            color: #212529;
-        }
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            color: #4a90e2;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        #video-container {
-            position: relative;
-            width: 640px;
-            height: 480px;
-            border: none;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-            background-color: #ffffff;
-        }
-        video, canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-        #message {
-            margin-top: 20px;
-            font-size: 1.2em;
-            font-weight: 500;
-            color: #495057;
-            min-height: 2em;
-            text-align: center;
-            padding: 15px 25px;
-            border: none;
-            border-radius: 8px;
-            background-color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s, color 0.3s, transform 0.2s;
-        }
-        #message:hover {
-            background-color: #4a90e2;
-            color: white;
-            transform: translateY(-3px);
-        }
-        #loading-message {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: #4a90e2;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.9em;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-            z-index: 10;
-        }
-
-        /* Media Queries for Responsiveness */
-        @media (max-width: 768px) {
-            #video-container {
-                width: 90%;
-                height: auto;
-                aspect-ratio: 4 / 3;
-            }
-            h1 {
-                font-size: 2em;
-            }
-            #message {
-                font-size: 1em;
-                padding: 10px 20px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.5em;
-            }
-            #message {
-                font-size: 0.9em;
-                padding: 8px 15px;
-            }
-            #loading-message {
-                font-size: 0.8em;
-                padding: 6px 10px;
-            }
-        }
-    </style>
+    <title>Connexion - Reconnaissance Faciale</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Mini Projet Reconnaissance Faciale</h1>
-
-    <div id="video-container">
-        <video id="video" width="640" height="480" autoplay muted></video>
-        <canvas id="overlay"></canvas>
-        <div id="loading-message">Chargement des modèles...</div>
-    </div>
-
-    <div id="message">En attente...</div>
-
+<body class="min-h-screen flex items-center justify-center bg-gray-900 text-gray-200">
+    <main class="w-full max-w-md bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-blue-400">Connexion Sécurisée</h1>
+            <p class="text-gray-400 mt-2">Authentifiez-vous par reconnaissance faciale pour accéder à vos fichiers.</p>
+        </div>
+        <div class="relative mt-6 w-full aspect-video bg-gray-700 rounded-lg overflow-hidden">
+            <video id="video" class="absolute top-0 left-0 w-full h-full object-cover" autoplay muted></video>
+            <canvas id="overlay" class="absolute top-0 left-0 w-full h-full pointer-events-none"></canvas>
+            <div id="loading-message" class="absolute top-3 left-3 bg-blue-500 text-white px-3 py-1 rounded text-xs">
+                Chargement des modèles...
+            </div>
+        </div>
+        <div id="image-upload-container" class="mt-4 hidden">
+            <label for="image-upload" class="block text-sm font-medium text-gray-400">Uploader une image :</label>
+            <input id="image-upload" type="file" accept="image/*" class="mt-2 block w-full text-sm text-gray-300 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div id="message" class="mt-4 text-center text-sm font-medium bg-gray-700 py-2 rounded">
+            En attente...
+        </div>
+        <div class="mt-6 text-center text-xs text-gray-500">
+            © 2025 Espace Privé - Accès sécurisé
+        </div>
+    </main>
     <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <script defer src="script.js"></script>
 </body>

@@ -5,6 +5,9 @@ const referenceImageName = 'Adrien'; // Le nom associé à ton image
 const referenceImagePath = 'reference.jpg'; // Le chemin vers ton image
 const modelPath = './models'; // Chemin vers le dossier des modèles
 
+const imageUploadContainer = document.getElementById('image-upload-container');
+const imageUpload = document.getElementById('image-upload');
+
 let labeledFaceDescriptors; // Pour stocker le descripteur de ton visage
 let faceMatcher; // L'outil pour comparer les visages
 
@@ -36,8 +39,8 @@ async function createLabeledFaceDescriptors() {
         const img = await faceapi.fetchImage(referenceImagePath);
         // Détecter le visage dans l'image de référence et calculer son descripteur
         const detections = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
-                                        .withFaceLandmarks()
-                                        .withFaceDescriptor();
+            .withFaceLandmarks()
+            .withFaceDescriptor();
 
         if (!detections) {
             console.error(`Aucun visage détecté dans ${referenceImagePath}`);
@@ -55,15 +58,69 @@ async function createLabeledFaceDescriptors() {
     }
 }
 
-// ----- Démarrage de la webcam -----
+// ----- Démarrage de la webcam OU fallback upload -----
 async function startVideo() {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
         video.srcObject = stream;
+        video.style.display = "block";
+        imageUploadContainer.style.display = "none";
         console.log("Webcam démarrée.");
     } catch (err) {
-        console.error("Erreur d'accès à la webcam:", err);
-        messageDiv.textContent = "Impossible d'accéder à la webcam.";
+        console.warn("Webcam non disponible, passage à l'upload d'image.");
+        video.style.display = "none";
+        imageUploadContainer.style.display = "block";
+        messageDiv.textContent = "Webcam indisponible. Veuillez uploader une image.";
+        setupImageUpload();
+    }
+}
+
+// ----- Gestion de l'upload d'image -----
+function setupImageUpload() {
+    imageUpload.addEventListener('change', async (e) => {
+        if (!e.target.files.length) return;
+        const file = e.target.files[0];
+        const img = await loadImageFromFile(file);
+
+        messageDiv.textContent = "Analyse de l'image...";
+        await recognizeFromImage(img);
+    });
+}
+
+// Utilitaire pour charger une image depuis un fichier
+function loadImageFromFile(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function() {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = reader.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+// Reconnaissance sur une image uploadée
+async function recognizeFromImage(img) {
+    const detections = await faceapi.detectAllFaces(img, new faceapi.TinyFaceDetectorOptions())
+        .withFaceLandmarks()
+        .withFaceDescriptors();
+
+    if (detections.length > 0 && faceMatcher) {
+        const results = detections.map(d => faceMatcher.findBestMatch(d.descriptor));
+        const isAdrienDetected = results.some(result => result.label === referenceImageName);
+
+        if (isAdrienDetected) {
+            localStorage.setItem('isAuthenticated', true);
+            window.location.href = "documents.html";
+        } else {
+            messageDiv.textContent = "Visage non reconnu, veuillez réessayer !";
+            messageDiv.classList.add("bg-red-500", "text-white");
+        }
+    } else {
+        messageDiv.textContent = "Aucun visage détecté.";
     }
 }
 
@@ -84,8 +141,8 @@ async function runRecognition() {
     setInterval(async () => {
         // Détecte tous les visages dans l'image actuelle de la vidéo
         const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
-                                        .withFaceLandmarks()
-                                        .withFaceDescriptors();
+            .withFaceLandmarks()
+            .withFaceDescriptors();
 
         // Optionnel: Redimensionne les résultats pour correspondre à la taille d'affichage
         const resizedDetections = faceapi.resizeResults(detections, displaySize);
@@ -109,15 +166,42 @@ async function runRecognition() {
             }
         } else if (faceMatcher) {
             // Aucun visage détecté
-             messageDiv.textContent = "Aucun visage détecté.";
+            messageDiv.textContent = "Aucun visage détecté.";
         } else {
-             // faceMatcher n'est pas encore prêt
-             messageDiv.textContent = "Préparation de la reconnaissance...";
+            // faceMatcher n'est pas encore prêt
+            messageDiv.textContent = "Préparation de la reconnaissance...";
         }
 
     }, 200); // Exécute la détection toutes les 200ms (5 fois par seconde)
 }
 
+async function recognizeFromVideo() {
+    const referenceImage = await faceapi.fetchImage('reference.jpg');
+    const referenceDescriptor = await faceapi.computeFaceDescriptor(referenceImage);
+
+    video.addEventListener('play', async () => {
+        const canvas = faceapi.createCanvasFromMedia(video);
+        document.body.append(canvas);
+
+        const interval = setInterval(async () => {
+            const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+                .withFaceLandmarks()
+                .withFaceDescriptors();
+
+            if (detections.length > 0) {
+                const bestMatch = faceapi.euclideanDistance(detections[0].descriptor, referenceDescriptor);
+                if (bestMatch < 0.6) {
+                    clearInterval(interval);
+                    localStorage.setItem('isAuthenticated', true);
+                    window.location.href = "documents.html";
+                } else {
+                    messageDiv.textContent = "Visage non reconnu, veuillez réessayer !";
+                    messageDiv.classList.add("bg-red-500", "text-white");
+                }
+            }
+        }, 200);
+    });
+}
 
 // ----- Fonction principale d'initialisation -----
 async function initialize() {
@@ -138,6 +222,8 @@ async function initialize() {
 
     // Attend que la vidéo commence à jouer pour lancer la reconnaissance
     video.addEventListener('playing', runRecognition);
+
+    recognizeFromVideo();
 }
 
 // ----- Lancement -----
