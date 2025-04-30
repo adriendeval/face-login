@@ -1,23 +1,45 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Espace Fichiers</title>
+    <script src="script.js"></script>
+    <title>Espace personnel</title>
+    <script>
+        // Supposons que referenceImageName est défini dans script.js
+        window.onload = function () {
+            // Modifier le <title>
+            document.title = 'Espace Personnel de ' + referenceImageName;
+
+            // Modifier le <h1>
+            const h1 = document.querySelector('h1');
+            h1.textContent = 'Bienvenue ' + referenceImageName + ' !';
+
+            // Ajouter un <span> (exemple décoratif)
+            const span = document.createElement("span");
+            span.style.marginLeft = "6px";
+            h1.appendChild(span);
+        };
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="min-h-screen flex items-center justify-center bg-gray-900 text-gray-200">
     <main class="w-full max-w-3xl bg-gray-800 rounded-lg shadow-lg p-6 p-4">
         <div class="flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-blue-400">Espace Fichiers</h1>
-            <button id="logout" class="px-4 py-2 bg-transparent border-solid border-2 border-red-500 text-white rounded hover:bg-red-600 hover:border-red-600 transition duration-100">
+            <h1 class="text-2xl font-bold text-blue-400">Bienvenue
+            </h1>
+            <button id="logout"
+                class="px-4 py-2 bg-transparent border-solid border-2 border-red-500 text-white rounded hover:bg-red-600 hover:border-red-600 transition duration-100">
                 Déconnexion
             </button>
         </div>
         <ul class="mt-6 space-y-4">
             <li class="flex items-center justify-between bg-gray-700 p-4 rounded hover:bg-gray-600">
                 <span class="text-blue-400">📁</span>
-                <span class="flex-1 ml-4">Mes documents</span>
+                <span class="flex-1 ml-4">Documents</span>
                 <span class="text-gray-400 text-sm">Dossier</span>
             </li>
             <li class="flex items-center justify-between bg-gray-700 p-4 rounded hover:bg-gray-600">
@@ -44,10 +66,11 @@
         if (!localStorage.getItem('isAuthenticated')) {
             window.location.href = "index.html";
         }
-        document.getElementById('logout').onclick = function() {
+        document.getElementById('logout').onclick = function () {
             localStorage.removeItem('isAuthenticated');
             window.location.href = "index.html";
         }
     </script>
 </body>
+
 </html>

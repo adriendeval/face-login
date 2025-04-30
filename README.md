@@ -1,7 +1,14 @@
-Pour tester, cliquer sur [ce lien](https://adriendeval.github.io/face-login/). Attention, l'image par défaut est celle de Donald Trump. Veuillez cloner ce dépôt sur votre machine afin de l'utiliser en local. Vous pourrez alors modifier l'image de référence et les fichiers à votre convenance.
+Pour tester le fonctionnement de la reconnaissance faciale, cliquer sur [ce lien](https://adriendeval.github.io/face-login/).
 
-Pour modifier l'image de référence, vous demander modifier le fichier `reference.jpg`.
-Pour modifier le message affiché en cas de reconnaissance du visage, vous devez vous rendre dans le fichier `script.js` et remplacer toutes les occurences de *Adrien* par ce que vous souhaitez.
+## Comment l'utiliser ?
+Si vous souhaitez télécharger ce dépôt afin de l'utiliser en local sur votre machine, vous pouvez ouvrir votre explorateur de fichiers et vous rendre dans le dossier dans lequel ce dépôt sera cloné.
+Un fois fait, tapez `cmd` dans la barre d'adresse de l'explorateur, ce qui ouvrira le terminal. Ensuite, tapez `git clone https://github.com/adriendeval/face-login.git`, puis `code face-login`. Cela ouvrira votre éditeur de texte. Nous vous conseillons d'utiliser **Visual Studio Code**.
+
+Ensuite, lancez le serveur web (avec PHP par exemple, s'il est installé sur votre machine) en faisant `Ctrl` + `J` pour ouvrir le terminal Visual Studio Code puis entrez `php -S localhost:8000`.
+
+Dans votre navigateur, ouvrez `http://localhost:8000` et admirez le résultat. Si vous souhaitez modifier l'image de référence, remplacer `reference.jpg` par l'image de votre choix. Assurez-vous qu'elle soit nommée `reference.jpg`.
+
+Par défaut, l'image de référence représente une personne aléatoire et le nom associé à l'image est `Utilisateur`. Pour modifier le nom, allez à la ligne 4 du fichier `script.js` et remplacez `Utilisateur` par ce que vous souhaitez.
 
 > [!NOTE]
 > **Veuillez ne pas toucher au dossier `models` !**

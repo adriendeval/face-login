@@ -1,7 +1,7 @@
 const video = document.getElementById('video');
 const messageDiv = document.getElementById('message');
 const loadingMessage = document.getElementById('loading-message');
-const referenceImageName = 'Adrien'; // Le nom associé à ton image
+const referenceImageName = 'Utilisateur'; // Le nom associé à ton image
 const referenceImagePath = 'reference.jpg'; // Le chemin vers ton image
 const modelPath = './models'; // Chemin vers le dossier des modèles
 
@@ -175,34 +175,6 @@ async function runRecognition() {
     }, 200); // Exécute la détection toutes les 200ms (5 fois par seconde)
 }
 
-async function recognizeFromVideo() {
-    const referenceImage = await faceapi.fetchImage('reference.jpg');
-    const referenceDescriptor = await faceapi.computeFaceDescriptor(referenceImage);
-
-    video.addEventListener('play', async () => {
-        const canvas = faceapi.createCanvasFromMedia(video);
-        document.body.append(canvas);
-
-        const interval = setInterval(async () => {
-            const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
-                .withFaceLandmarks()
-                .withFaceDescriptors();
-
-            if (detections.length > 0) {
-                const bestMatch = faceapi.euclideanDistance(detections[0].descriptor, referenceDescriptor);
-                if (bestMatch < 0.6) {
-                    clearInterval(interval);
-                    localStorage.setItem('isAuthenticated', true);
-                    window.location.href = "documents.html";
-                } else {
-                    messageDiv.textContent = "Visage non reconnu, veuillez réessayer !";
-                    messageDiv.classList.add("bg-red-500", "text-white");
-                }
-            }
-        }, 200);
-    });
-}
-
 // ----- Fonction principale d'initialisation -----
 async function initialize() {
     const modelsLoaded = await loadModels();
@@ -226,5 +198,5 @@ async function initialize() {
     recognizeFromVideo();
 }
 
-// ----- Lancement -----
+// Lancement
 initialize();
