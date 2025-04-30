@@ -19,6 +19,9 @@
                 Chargement des modèles...
             </div>
         </div>
+        <div class="mt-2 text-center">
+            <a href="#" id="switch-to-upload" class="text-blue-400 hover:underline text-sm">Envoyer un fichier à la place</a>
+        </div>
         <div id="image-upload-container" class="mt-4 hidden">
             <label for="image-upload" class="block text-sm font-medium text-gray-400">Uploader une image :</label>
             <input id="image-upload" type="file" accept="image/*" class="mt-2 block w-full text-sm text-gray-300 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -32,5 +35,26 @@
     </main>
     <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <script defer src="script.js"></script>
+    <script>
+        // Ajout du comportement pour le lien "Envoyer un fichier à la place"
+        document.addEventListener('DOMContentLoaded', function() {
+            const switchLink = document.getElementById('switch-to-upload');
+            const video = document.getElementById('video');
+            const overlay = document.getElementById('overlay');
+            const uploadContainer = document.getElementById('image-upload-container');
+            const loadingMsg = document.getElementById('loading-message');
+            switchLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Masquer la vidéo et l'overlay
+                video.style.display = 'none';
+                overlay.style.display = 'none';
+                if (loadingMsg) loadingMsg.style.display = 'none';
+                // Afficher le bloc d'upload
+                uploadContainer.classList.remove('hidden');
+                // Masquer le lien
+                switchLink.style.display = 'none';
+            });
+        });
+    </script>
 </body>
 </html>
