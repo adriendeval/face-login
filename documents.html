@@ -1,65 +1,69 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="script.js"></script>
     <title>Espace personnel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
     <script>
         // Supposons que referenceImageName est défini dans script.js
         window.onload = function () {
             // Modifier le <title>
-            document.title = 'Espace Personnel de ' + referenceImageName;
+            document.title = 'Espace Personnel de ' + (window.referenceImageName || '');
 
             // Modifier le <h1>
             const h1 = document.querySelector('h1');
-            h1.textContent = 'Bienvenue ' + referenceImageName + ' !';
+            h1.textContent = 'Bienvenue ' + (window.referenceImageName || '') + ' !';
 
-            // Ajouter un <span> (exemple décoratif)
+            // Ajouter un <span> décoratif
             const span = document.createElement("span");
             span.style.marginLeft = "6px";
             h1.appendChild(span);
         };
     </script>
-
-    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-
-<body class="min-h-screen flex items-center justify-center bg-gray-900 text-gray-200">
-    <main class="w-full max-w-3xl bg-gray-800 rounded-lg shadow-lg p-6 p-4">
-        <div class="flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-blue-400">Bienvenue
-            </h1>
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 via-blue-50 to-pink-100 text-gray-900 font-['Poppins',sans-serif]">
+    <main class="w-full max-w-lg bg-white/90 rounded-3xl shadow-2xl p-10 border border-blue-100 backdrop-blur-lg">
+        <div class="text-center mb-8">
+            <div class="flex justify-center mb-4">
+                <svg class="w-16 h-16 text-indigo-500 drop-shadow-lg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 48 48">
+                    <circle cx="24" cy="18" r="8" stroke="currentColor" stroke-width="2" fill="#c7d2fe"/>
+                    <ellipse cx="24" cy="36" rx="14" ry="8" stroke="currentColor" stroke-width="2" fill="#e0e7ff"/>
+                </svg>
+            </div>
+            <h1 class="text-4xl font-extrabold text-indigo-700 tracking-tight drop-shadow">Bienvenue !</h1>
+        </div>
+        <div class="flex justify-end mb-6">
             <button id="logout"
-                class="px-4 py-2 bg-transparent border-solid border-2 border-red-500 text-white rounded hover:bg-red-600 hover:border-red-600 transition duration-100">
+                class="px-4 py-2 bg-transparent border-2 border-red-500 text-red-600 rounded-lg font-semibold hover:bg-red-50 hover:border-red-600 transition duration-150 text-sm focus:outline-none focus:ring-2 focus:ring-red-300">
                 Déconnexion
             </button>
         </div>
-        <ul class="mt-6 space-y-4">
-            <li class="flex items-center justify-between bg-gray-700 p-4 rounded hover:bg-gray-600">
-                <span class="text-blue-400">📁</span>
-                <span class="flex-1 ml-4">Documents</span>
-                <span class="text-gray-400 text-sm">Dossier</span>
+        <ul class="space-y-4">
+            <li class="flex items-center justify-between bg-indigo-50 border border-indigo-100 p-4 rounded-xl hover:bg-indigo-100 transition">
+                <span class="text-indigo-400 text-xl">📁</span>
+                <span class="flex-1 ml-4 font-medium text-indigo-700">Documents</span>
+                <span class="text-indigo-400 text-xs">Dossier</span>
             </li>
-            <li class="flex items-center justify-between bg-gray-700 p-4 rounded hover:bg-gray-600">
-                <span class="text-blue-400">📄</span>
-                <span class="flex-1 ml-4">rapport.pdf</span>
-                <span class="text-gray-400 text-sm">PDF</span>
+            <li class="flex items-center justify-between bg-indigo-50 border border-indigo-100 p-4 rounded-xl hover:bg-indigo-100 transition">
+                <span class="text-indigo-400 text-xl">📄</span>
+                <span class="flex-1 ml-4 font-medium text-indigo-700">rapport.pdf</span>
+                <span class="text-indigo-400 text-xs">PDF</span>
             </li>
-            <li class="flex items-center justify-between bg-gray-700 p-4 rounded hover:bg-gray-600">
-                <span class="text-blue-400">🖼️</span>
-                <span class="flex-1 ml-4">photo-vacances.jpg</span>
-                <span class="text-gray-400 text-sm">Image</span>
+            <li class="flex items-center justify-between bg-indigo-50 border border-indigo-100 p-4 rounded-xl hover:bg-indigo-100 transition">
+                <span class="text-indigo-400 text-xl">🖼️</span>
+                <span class="flex-1 ml-4 font-medium text-indigo-700">photo-vacances.jpg</span>
+                <span class="text-indigo-400 text-xs">Image</span>
             </li>
-            <li class="flex items-center justify-between bg-gray-700 p-4 rounded hover:bg-gray-600">
-                <span class="text-blue-400">📝</span>
-                <span class="flex-1 ml-4">notes.txt</span>
-                <span class="text-gray-400 text-sm">Texte</span>
+            <li class="flex items-center justify-between bg-indigo-50 border border-indigo-100 p-4 rounded-xl hover:bg-indigo-100 transition">
+                <span class="text-indigo-400 text-xl">📝</span>
+                <span class="flex-1 ml-4 font-medium text-indigo-700">notes.txt</span>
+                <span class="text-indigo-400 text-xs">Texte</span>
             </li>
         </ul>
-        <div class="mt-6 text-center text-xs text-gray-500">
-            © 2025 FaceLogin - Test de Reconnaissance Faciale
+        <div class="mt-10 text-center text-xs text-gray-400">
+            © 2025 <span class="font-bold text-indigo-500">FaceLogin</span> — Test de Reconnaissance Faciale
         </div>
     </main>
     <script>
@@ -72,5 +76,4 @@
         }
     </script>
 </body>
-
 </html>

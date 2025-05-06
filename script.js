@@ -70,7 +70,7 @@ async function startVideo() {
         console.warn("Webcam non disponible, passage à l'upload d'image.");
         video.style.display = "none";
         imageUploadContainer.style.display = "block";
-        messageDiv.textContent = "Webcam indisponible. Veuillez uploader une image.";
+        messageDiv.textContent = "Webcam indisponible. Veuillez envoyer une image.";
         setupImageUpload();
     }
 }
